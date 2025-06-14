@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
@@ -13,7 +13,7 @@ class RegisterForm(Form):
     ])
 
 app =Flask(__name__)
-
+app.secret_key = b'PythonWeb1234'
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgre1234@localhost:5432/user_pw'
 
 db=SQLAlchemy(app)
@@ -68,12 +68,13 @@ def signup():
         db.session.commit()
 
         userRESult=db.session.query(User_PW).filter(User_PW.fname==fname)
-        success=userRESult
         fnamedata=fname
         for result in userRESult:
             print(result.fname ,result.lname)
-        return render_template("success.html",data=fnamedata.upper())
-     
+        # return render_template("success.html",data=fnamedata.upper())
+        flash(message="Üzv olmağınız uğurla tamalandı.",category="success")
+        # yuxardaki kod sayesinde flash mesajdari (bir nov alert) leri istifade edirik
+        return redirect(url_for("indexpage"))
     else:
         return render_template("signup.html",form=form)
 
