@@ -2,7 +2,20 @@ from flask import Flask,render_template,session,request,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
+from functools import wraps
 
+
+#bu method decorator methodudur biz bunun vasitesi ile giris etmeyenlere qadaqa qoyuruq
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "logged_in" in session:
+            return f(*args, **kwargs)
+        else:
+            flash("Giriş etməlisiniz!","warning")
+            return redirect(url_for("login"))
+       
+    return decorated_function
  
 def name(ad):
     if len(ad)==1:
@@ -116,7 +129,10 @@ def signup():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
 @app.route("/dashboard")
+@login_required#giris etmesen bu method islemir
 def dashboard():
     return render_template("dashboard.html")
 
