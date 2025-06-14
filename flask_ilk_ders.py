@@ -3,7 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
 
-
+ 
+def name(ad):
+    if len(ad)==1:
+        return ad.upper()
+    else:
+        herf_ilk=ad[0].upper()
+        
+        for i in ad[1:]:
+            herf_ilk+=(i.lower())
+        return herf_ilk
 #User sign up formu
 class RegisterForm(Form):
     name=StringField("Ad",validators=[validators.Length(min=1,max=30)])
@@ -11,6 +20,10 @@ class RegisterForm(Form):
     password=PasswordField("Parol",validators=[
         validators.DataRequired(message="Zehmet olmasa parol daxil edin!")
     ])
+
+class LoginForm(Form):
+    name=StringField("Ad",validators=[validators.Length(min=1,max=30)])
+    password=PasswordField("Parol")
 
 app =Flask(__name__)
 app.secret_key = b'PythonWeb1234'
@@ -48,13 +61,32 @@ def about():
 @app.route("/about/<string:id>")
 def detail(id):
     return "About id:"+id 
+#Login prosesi
+@app.route("/login",methods=["GET","POST"])
+def login():
+    form=LoginForm(request.form)
+    if request.method=="POST":
+      result = db.session.query(
+               db.session.query(User_PW)
+               .filter(User_PW.fname==form.name.data)
+               .exists()
+              ).scalar()
+    #   exists = User_PW.query.filter_by(fname=str(form.name)).count() > 0 similar code
+      if result :
+        for user in User_PW.query.filter_by(fname=form.name.data):
+            if sha256_crypt.verify(form.password.data,user.password):
+                flash("Giriş uğurla başa çatdı.","success")
+                return redirect(url_for("indexpage"))
+            else:
+                 flash("Şifrə yanlışdır!","danger")
+      else:
+        print("ad sehvdi")
+        flash("Bu adda istifadəçi tapılmadı.","danger")
+    return render_template("login.html",form=form)
 
-# @app.route("/signup")
-# def signup():
-#     return render_template("signup.html")
 @app.route("/signup",methods=['GET','POST'])
 def signup():
-    fnamedata=''
+   
     form=RegisterForm(request.form)
     if request.method=="POST" and form.validate():
         fname=request.form['name']
@@ -68,13 +100,13 @@ def signup():
         db.session.commit()
 
         userRESult=db.session.query(User_PW).filter(User_PW.fname==fname)
-        fnamedata=fname
+        fnamedata=None
         for result in userRESult:
-            print(result.fname ,result.lname)
-        # return render_template("success.html",data=fnamedata.upper())
-        flash(message="Üzv olmağınız uğurla tamalandı.",category="success")
+            fnamedata=name(result.fname)
+ 
+        flash(message=f"{fnamedata} Üzv olmağınız uğurla tamalandı.",category="success")
         # yuxardaki kod sayesinde flash mesajdari (bir nov alert) leri istifade edirik
-        return redirect(url_for("indexpage"))
+        return redirect(url_for("login"))
     else:
         return render_template("signup.html",form=form)
 
