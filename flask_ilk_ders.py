@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,flash
+from flask import Flask,render_template,session,request,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
@@ -75,6 +75,8 @@ def login():
       if result :
         for user in User_PW.query.filter_by(fname=form.name.data):
             if sha256_crypt.verify(form.password.data,user.password):
+                session["logged_in"]=True
+                session["username"]=user.fname
                 flash("Giriş uğurla başa çatdı.","success")
                 return redirect(url_for("indexpage"))
             else:
@@ -109,6 +111,14 @@ def signup():
         return redirect(url_for("login"))
     else:
         return render_template("signup.html",form=form)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 if __name__=="__main__":
     app.run(debug=True)

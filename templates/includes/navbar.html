@@ -8,12 +8,25 @@
         </li> 
       </ul>
       <ul class ="navbar-nav ml-auto">
-      <li class="nav-item active" >
-          <a class="nav-link" href="/login">Giriş Et</a>
-        </li> 
+
+        {% if session["logged_in"] %}
         <li class="nav-item active" >
+          <a class="nav-link" href="/dashboard">Idarə Paneli</a>
+        </li>
+        <li class="nav-item active" >
+          <a class="nav-link" href="/logout">Çıxış Et</a>
+        </li>
+        {% else %}
+        <li class="nav-item active" >
+          <a class="nav-link" href="/login">Giriş Et</a>
+        </li>
+         <li class="nav-item active" >
           <a class="nav-link" href="/signup">Üzv ol</a>
-        </li> 
+        </li>
+        {% endif %}
+
+       
+        
       </ul>
     </div>
   </div>
