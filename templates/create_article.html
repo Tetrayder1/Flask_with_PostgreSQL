@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+ <h2>Məqalə Düzəlt</h2>
+ <hr> 
+{% from "includes/formhelpers.html" import render_field %}
+<form method="POST">
+  <div class="form-group">
+    {{ render_field(form.title,class="form-control",placeholder="Başlıq") }}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.content,class="form-control",placeholder="Mətn") }}
+  </div>
+  <button type="submit" class="btn btn-primary">Qeyd Et</button>
+</form>
+<br>
+<br>
+
+{% endblock  %}

@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-
+from datetime import datetime,timedelta
 
 #bu method decorator methodudur biz bunun vasitesi ile giris etmeyenlere qadaqa qoyuruq
 def login_required(f):
@@ -38,11 +38,30 @@ class LoginForm(Form):
     name=StringField("Ad",validators=[validators.Length(min=1,max=30)])
     password=PasswordField("Parol")
 
+class ArticlesForm(Form):
+    title=StringField("Başlıq",validators=[validators.Length(min=1,max=150)])
+    content=TextAreaField("Mətn",validators=[validators.Length(min=1)])
+
 app =Flask(__name__)
 app.secret_key = b'PythonWeb1234'
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgre1234@localhost:5432/user_pw'
 
 db=SQLAlchemy(app)
+
+class Article_PW(db.Model):
+    __tablename__ ='article_pw_table'
+
+    id=db.Column(db.Integer,primary_key=True)
+    title=db.Column(db.String())
+    content=db.Column(db.Text)
+    author=db.Column(db.String())
+    created_date=db.Column(db.DateTime)
+
+    def __init__(self,title,content,author,created_date):
+         self.title=title
+         self.content=content
+         self.author=author
+         self.created_date=created_date
 
 class User_PW(db.Model):
 
@@ -134,7 +153,49 @@ def logout():
 @app.route("/dashboard")
 @login_required#giris etmesen bu method islemir
 def dashboard():
-    return render_template("dashboard.html")
+    data=dict()
+    articles= Article_PW.query.filter_by(author=session["username"])
+    exists=articles.count()>0
+    if exists:
+        for article in articles:
+            data[article.id]=([article.title,article.created_date])
+        return render_template("dashboard.html",data=data,exists=exists)
+    else:
+        flash("Heç bir məqalə tapılmadı.","info")
+        return render_template("dashboard.html",exists=exists)
+
+@app.route("/dashboard/create_article",methods=["GET","POST"])
+def create_article():
+    form =ArticlesForm(request.form)
+    if request.method=="POST" and form.validate():
+        title=form.title.data
+        content=form.content.data
+        user_name=session["username"]
+        created_date=datetime.now()
+
+        with app.app_context():
+            db.create_all()
+        article=Article_PW(title,content,user_name,created_date)
+        db.session.add(article)
+        db.session.commit()
+        flash("Məqalə uğurlu şəkildə qeyd edildi.","success")
+        return redirect(url_for("dashboard"))
+    else:
+        return render_template("create_article.html",form=form)
+
+@app.route("/articles")
+@login_required
+def articles():
+    data=dict()
+    articles= Article_PW.query.filter_by(author=session["username"])
+    exists=articles.count()>0
+    if exists:
+        for article in articles:
+            data[article.id]=([article.title,article.created_date,article.author])
+        return render_template("articles.html",data=data,exists=exists)
+    else:
+        flash("Heç bir məqalə tapılmadı.","info")
+        return render_template("articles.html",exists=exists)
 
 if __name__=="__main__":
     app.run(debug=True)

@@ -1,16 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
- <main role="main" class="container">
-      <h1 class="mt-5">Sticky footer</h1>
-      <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS.</p>
-      <p>Use <a href="/">index</a> if need be, too.</p>
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
-      </div>
-    </footer>
-
+<h2>Məqalələrim</h2>
+<hr>
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn-group me-2" role="group" aria-label="First group">
+  <a class="btn btn-primary" href="/dashboard/create_article" role="button">Əlavə Et</a>
+  </div>
+  <div class="btn-group me-2" role="group" aria-label="Second group">
+  <button type="button" class="btn btn-warning">Düzəliş Et</button>
+  </div>
+  <div class="btn-group" role="group" aria-label="Third group">
+   <button type="button" class="btn btn-danger">Sil</button>
+  </div>
+</div>
+<br>
+<br>
+{% if exists %}
+{% for key,value  in data.items() %}
+<div class="list-group">
+  <a href="/" class="list-group-item list-group-item-action active" aria-current="true">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{value[0]}}</h5>
+      <small>{{value[1].strftime("%d/%m/%Y")}}</small>
+    </div>
+    <small>Siz</small>
+  </a>
+</div>
+<br>
+{% endfor %}
+{% endif %}
 {% endblock body %}
 
