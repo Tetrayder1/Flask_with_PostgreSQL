@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="jumbotron jumbotron-fluid " style="background-color:rgb(210, 172, 77);">
+  <div class="container">
+    <h1 class="display-4">{{data[0]}}</h1>
+    <p class="lead">{{data[2]}} tərəfindən {{data[1]}} zamanında yaradıldı.</p>
+    <hr>
+    {{data[3] | safe}}
+  </div>
+</div>
+
+{% endblock body %}

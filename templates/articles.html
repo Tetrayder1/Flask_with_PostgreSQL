@@ -6,7 +6,7 @@
 {% if exists %}
 {% for key,value  in data.items() %}
 <div class="list-group">
-  <a href="/" class="list-group-item list-group-item-action active" aria-current="true">
+  <a href="/article/{{key}}" class="list-group-item list-group-item-action active" aria-current="true">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{value[0]}}</h5>
       <small>{{value[1].strftime("%d/%m/%Y")}}</small>

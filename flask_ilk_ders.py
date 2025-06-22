@@ -157,9 +157,11 @@ def dashboard():
     articles= Article_PW.query.filter_by(author=session["username"])
     exists=articles.count()>0
     if exists:
+        say=1
         for article in articles:
-            data[article.id]=([article.title,article.created_date])
-        return render_template("dashboard.html",data=data,exists=exists)
+            data[say]=([article.title,article.created_date,article.id])
+            say+=1
+        return render_template("dashboard.html",data=data,exists=exists,say=say)
     else:
         flash("Heç bir məqalə tapılmadı.","info")
         return render_template("dashboard.html",exists=exists)
@@ -197,5 +199,21 @@ def articles():
         flash("Heç bir məqalə tapılmadı.","info")
         return render_template("articles.html",exists=exists)
 
+@app.route("/article/<string:id>")
+@login_required
+def article(id):
+    data=list()
+    article= Article_PW.query.filter_by(id=id)
+    exists=article.count()>0
+    if exists:
+        data.append(article[0].title)
+        data.append(article[0].created_date)
+        data.append(article[0].author)
+        data.append(article[0].content)
+        return render_template("article.html",data=data)
+    else:
+        flash("Belə bir məqalə tapılmadı.","warning")
+        return redirect(url_for("dashboard"))
+  
 if __name__=="__main__":
     app.run(debug=True)
