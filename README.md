@@ -95,6 +95,9 @@ def signup():
 
 <p align="left"></p>
 
+
+<p align="left">Bu proyektdə SQLAlchemy ilə  add- dən əlavə  update,select və delete prosesləridə icra olunub.</p>
+
 ###
 
 <h2 align="left">I code with</h2>
