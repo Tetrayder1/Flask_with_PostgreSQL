@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form,StringField,TextAreaField,PasswordField,validators
 from passlib.hash import sha256_crypt
 from functools import wraps
+from sqlalchemy import delete
 from datetime import datetime,timedelta
 
 #bu method decorator methodudur biz bunun vasitesi ile giris etmeyenlere qadaqa qoyuruq
@@ -185,12 +186,22 @@ def create_article():
     else:
         return render_template("create_article.html",form=form)
 
-@app.route("/articles")
+class Search(Form):
+    search=StringField("Axtaris",validators=[validators.Length(min=1,max=150)])
+    
+
+@app.route("/articles",methods=['GET','POST'])
 @login_required
 def articles():
     data=dict()
-    articles= Article_PW.query.filter_by(author=session["username"])
-    exists=articles.count()>0
+    articles= Article_PW.query.all()
+    
+    if request.method=="POST" :
+        search= request.form.get("search")
+        if search!="":
+            articles=Article_PW.query.filter_by(title=search).all()
+        
+    exists=len(articles)>0
     if exists:
         for article in articles:
             data[article.id]=([article.title,article.created_date,article.author])
@@ -215,5 +226,45 @@ def article(id):
         flash("Belə bir məqalə tapılmadı.","warning")
         return redirect(url_for("dashboard"))
   
+# meqale silme
+@app.route("/delete/<string:id>")
+@login_required
+def delete(id):
+    # article=Article_PW.query.get(id)
+    # bu usul daha yaxsidi
+    delete_row=Article_PW.query.filter_by(id=id).first()
+    if delete_row:
+        # birden cox setiri silmek ucun:Article_PW.query.filter_by(id>2).delete()
+        db.session.delete(delete_row)
+        db.session.commit()
+    flash(f"{delete_row} uğurlu şəkildə silindi","success")
+    return redirect(url_for("dashboard"))
+
+@app.route("/update/<string:id>",methods=["GET","POST"])
+@login_required
+def update_article(id):
+
+    
+    article=Article_PW.query.get_or_404(id)
+    form =ArticlesForm()
+    if article:
+        form.title.data=article.title
+        form.content.data=article.content
+    else :
+        flash("Bu adda blog tapılmadı.","danger")
+        return redirect(url_for("dashboard"))
+    if request.method=="POST" and form.validate():
+        form=ArticlesForm(request.form)
+        title=form.title.data
+        content=form.content.data
+        article.title=title
+        article.content=content
+        db.session.commit()
+        flash("Məqalə uğurlu şəkildə yeniləndi.","success")
+        return redirect(url_for("dashboard"))
+    
+    return render_template("update_article.html",form=form)
+
+
 if __name__=="__main__":
     app.run(debug=True)

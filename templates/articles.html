@@ -1,7 +1,20 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<h2>Məqalələr</h2>
+
+<nav class="navbar navbar-light  justify-content-between " style="background-color:rgb(210, 172, 77);">
+  <a class="navbar-brand"><h2>Məqalələr</h2></a>
+  <form class="form-inline" method="post"> 
+  <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+   <div class="input-group">
+    <input name="search" class="form-control mr-sm-2 mr-md-3" type="search" placeholder="Search" aria-label="Search"> 
+       </div>
+  <div class="btn-group mr-3" role="group" aria-label="First group">
+ <button class="btn btn-outline-success  my-2 my-sm-0" type="submit">Search</button>
+  </div>
+</div>
+  </form>
+</nav>
 <hr>
 {% if exists %}
 {% for key,value  in data.items() %}

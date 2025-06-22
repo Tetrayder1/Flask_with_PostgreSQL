@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
-
+<style>
+th, td {
+  border: 1px solid black;
+  border-radius: 10px;
+}
+</style>
 <h2>Məqalələrim</h2>
 <hr>
 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
@@ -14,7 +19,7 @@
 {% if exists %}
 {% for key,value  in data.items() %}
     <tr>
-      <td style="background-color:rgb(210, 172, 77);" >{{key}}</td>
+      <td class="font-weight-bold" style="background-color:rgb(210, 172, 77);" >{{key}}</td>
       <td style="background-color:rgb(210, 172, 77);">
       <div class="list-group btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
   <a href="/article/{{value[2]}}" class="list-group-item list-group-item-action active" aria-current="true">
@@ -29,10 +34,10 @@
       <td style="background-color:rgb(210, 172, 77);">
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
        <div class="btn-group me-2" role="group" aria-label="Second group">
-  <button type="button" class="btn btn-warning">Düzəliş Et</button>
+   <a class="btn btn-warning btn-lg active" aria-pressed="true" href="/update/{{value[2]}}" role="button">Düzəliş Et</a>
   </div>
-  <div class="btn-group" role="group" aria-label="Third group">
-   <button type="button" class="btn btn-danger">Sil</button>
+   <div class="btn-group" role="group" aria-label="Third group">
+   <a class="btn btn-danger btn-lg active" aria-pressed="true" href="/delete/{{value[2]}}" role="button">Sil</a>
   </div>
 </div>
       </td>

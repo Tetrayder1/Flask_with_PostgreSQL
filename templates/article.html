@@ -4,9 +4,12 @@
 <div class="jumbotron jumbotron-fluid " style="background-color:rgb(210, 172, 77);">
   <div class="container">
     <h1 class="display-4">{{data[0]}}</h1>
-    <p class="lead">{{data[2]}} tərəfindən {{data[1]}} zamanında yaradıldı.</p>
+    <p class="lead">{{data[2]}} tərəfindən {{data[1].strftime('%x')}} {{data[1].strftime('%X')}} zamanında yaradıldı.</p>
     <hr>
-    {{data[3] | safe}}
+    <div style="background-color:White;">
+{{data[3] | safe}}
+    </div>
+    
   </div>
 </div>
 
