@@ -2,12 +2,17 @@
 {% block body %}
 
 <div class="jumbotron jumbotron-fluid " style="background-color:rgb(210, 172, 77);">
-  <div class="container">
+  <div class="container" >
     <h1 class="display-4">{{data[0]}}</h1>
     <p class="lead">{{data[2]}} tərəfindən {{data[1].strftime('%x')}} {{data[1].strftime('%X')}} zamanında yaradıldı.</p>
     <hr>
-    <div style="background-color:White;">
-{{data[3] | safe}}
+    <div class="container" style="background-color:rgba(249, 247, 208 
+); color:White; border-radius: 10px;" >
+    <div>
+    </div>
+    <br>
+    {{data[3] | safe}}
+    <br>
     </div>
     
   </div>

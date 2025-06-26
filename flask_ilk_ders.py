@@ -195,15 +195,21 @@ class Search(Form):
 def articles():
     data=dict()
     articles= Article_PW.query.all()
-    
+    articles1=list()
     if request.method=="POST" :
         search= request.form.get("search")
-        if search!="":
-            articles=Article_PW.query.filter_by(title=search).all()
-        
-    exists=len(articles)>0
-    if exists:
         for article in articles:
+            if search!="":
+                if article.title.find(search)!=-1:
+                    articles1.append(article)
+            else:
+                articles1.append(article)
+    else:
+        articles1=articles   
+
+    exists=len(articles1)>0
+    if exists:
+        for article in articles1:
             data[article.id]=([article.title,article.created_date,article.author])
         return render_template("articles.html",data=data,exists=exists)
     else:
